@@ -1,6 +1,6 @@
 requests
 notion-client
-github-heatmap
+github-heatmap==1.1.7
 retrying
 pendulum
 python-dotenv
