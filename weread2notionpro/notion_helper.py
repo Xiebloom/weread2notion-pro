@@ -241,12 +241,21 @@ class NotionHelper:
 
     def insert_to_setting_database(self):
         existing_pages = self.query(database_id=self.setting_database_id, filter={"property": "标题", "title": {"equals": "设置"}}).get("results")
+        # 获取环境变量，确保它们不为None
+        notion_token = os.getenv("NOTION_TOKEN") or ""
+        notion_page = os.getenv("NOTION_PAGE") or ""
+        weread_cookie = os.getenv("WEREAD_COOKIE") or ""
+        
+        # 如果cookie太长，只保存前100个字符
+        if len(weread_cookie) > 100:
+            weread_cookie = weread_cookie[:100] + "..."
+            
         properties = {
             "标题": {"title": [{"type": "text", "text": {"content": "设置"}}]},
             "最后同步时间": {"date": {"start": pendulum.now("Asia/Shanghai").isoformat()}},
-            "NotinToken": {"rich_text": [{"type": "text", "text": {"content": os.getenv("NOTION_TOKEN")}}]},
-            "NotinPage": {"rich_text": [{"type": "text", "text": {"content": os.getenv("NOTION_PAGE")}}]},
-            "WeReadCookie": {"rich_text": [{"type": "text", "text": {"content": os.getenv("WEREAD_COOKIE")}}]},
+            "NotinToken": {"rich_text": [{"type": "text", "text": {"content": notion_token}}]},
+            "NotinPage": {"rich_text": [{"type": "text", "text": {"content": notion_page}}]},
+            "WeReadCookie": {"rich_text": [{"type": "text", "text": {"content": weread_cookie}}]},
         }
         if existing_pages:
             remote_properties = existing_pages[0].get("properties")
